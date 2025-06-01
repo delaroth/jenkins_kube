@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Use the Docker Hub credentials we set up in Jenkins
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
                         sh "docker push ${IMAGE_NAME}:${env.BUILD_NUMBER}"
                         sh "docker push ${IMAGE_NAME}:latest"
