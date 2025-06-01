@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Replace with your Docker Hub username
-        DOCKER_HUB_USERNAME = 'your-dockerhub-username'
+        DOCKER_HUB_USERNAME = 'delaroth'
         IMAGE_NAME = "${DOCKER_HUB_USERNAME}/my-kubernetes-app"
         # The Kubeconfig path inside the container is /var/jenkins_home/.kube/config
         KUBECONFIG_PATH = '/var/jenkins_home/.kube/config'
