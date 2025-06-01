@@ -37,28 +37,22 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
-                        sh """
-                            TEMP_KUBECONFIG_FILE=\$(mktemp)
-                            printf '%s' "${KUBECONFIG_CONTENT}" > "\$TEMP_KUBECONFIG_FILE"
-                            chmod 600 "\$TEMP_KUBECONFIG_FILE"
-
-                            echo "--- DEBUGGING KUBECONFIG CONTENT START ---"
-                            # WARNING: This will print your Kubeconfig to the Jenkins log.
-                            # Remove this 'cat' command after debugging!
-                            cat "\$TEMP_KUBECONFIG_FILE"
-                            echo "--- DEBUGGING KUBECONFIG CONTENT END ---"
-
+                    // THIS IS THE CRUCIAL CHANGE:
+                    // Use 'file()' binding. Jenkins will take the content of your 'k3s-kubeconfig'
+                    // (even if it's 'Secret text') and write it to a temporary file.
+                    // The path to this temporary file will be available in KUBECFG_FILE_PATH.
+                    withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECFG_FILE_PATH')]) {
+                        // Set KUBECONFIG environment variable for kubectl to use the temporary file
+                        withEnv(["KUBECONFIG=${KUBECFG_FILE_PATH}"]) {
                             echo "Applying Kubernetes manifests and updating deployment..."
 
-                            KUBECONFIG=\${TEMP_KUBECONFIG_FILE} kubectl apply -f kubernetes/deployment.yaml
-                            KUBECONFIG=\${TEMP_KUBECONFIG_FILE} kubectl apply -f kubernetes/service.yaml
-                            KUBECONFIG=\${TEMP_KUBECONFIG_FILE} kubectl set image deployment/my-kubernetes-app-deployment my-kubernetes-app=${IMAGE_NAME}:${env.BUILD_NUMBER}
+                            // kubectl will now use the properly generated temporary file
+                            sh "kubectl apply -f kubernetes/deployment.yaml"
+                            sh "kubectl apply -f kubernetes/service.yaml"
+                            sh "kubectl set image deployment/my-kubernetes-app-deployment my-kubernetes-app=${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
                             echo "Deployment updated to use image: ${IMAGE_NAME}:${env.BUILD_NUMBER}"
-
-                            rm "\$TEMP_KUBECONFIG_FILE"
-                        """
+                        }
                     }
                 }
             }
@@ -67,18 +61,13 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG_CONTENT_VERIFY')]) {
-                        sh """
-                            TEMP_KUBECONFIG_FILE=\$(mktemp)
-                            printf '%s' "${KUBECONFIG_CONTENT_VERIFY}" > "\$TEMP_KUBECONFIG_FILE"
-                            chmod 600 "\$TEMP_KUBECONFIG_FILE"
-
+                    // Apply the same 'file()' binding for the verification stage
+                    withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECFG_FILE_PATH')]) {
+                        withEnv(["KUBECONFIG=${KUBECFG_FILE_PATH}"]) {
                             echo "Waiting for deployment rollout to complete..."
-                            KUBECONFIG=\${TEMP_KUBECONFIG_FILE} kubectl rollout status deployment/my-kubernetes-app-deployment --timeout=5m
+                            sh "kubectl rollout status deployment/my-kubernetes-app-deployment --timeout=5m"
                             echo "Deployment rollout complete."
-
-                            rm "\$TEMP_KUBECONFIG_FILE"
-                        """
+                        }
                     }
                 }
             }
