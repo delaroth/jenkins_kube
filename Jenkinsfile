@@ -50,7 +50,7 @@ pipeline {
                 script {
                     // Use 'withCredentials' to retrieve the K3s kubeconfig content from the 'Secret text' credential
                     // The content will be placed in the environment variable 'KUBECONFIG_CONTENT'
-                    withCredentials([string(credentialsId: 'k3s-kubeconfig-text', variable: 'KUBECONFIG_CONTENT')]) {
+                    withCredentials([string(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
                         // Create a temporary file on the Jenkins agent and write the kubeconfig content into it
                         // 'mktemp' creates a unique temporary file path
                         sh """
@@ -81,7 +81,7 @@ pipeline {
             steps {
                 script {
                     // Repeat the 'withCredentials' and temporary file creation to use kubeconfig for verification
-                    withCredentials([string(credentialsId: 'k3s-kubeconfig-text', variable: 'KUBECONFIG_CONTENT_VERIFY')]) {
+                    withCredentials([string(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG_CONTENT_VERIFY')]) {
                         sh """
                             TEMP_KUBECONFIG_FILE=\$(mktemp)
                             echo "${KUBECONFIG_CONTENT_VERIFY}" > "\$TEMP_KUBECONFIG_FILE"
