@@ -7,6 +7,12 @@ pipeline {
     }
 
     stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/delaroth/jenkins_kube.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -20,8 +26,6 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        // Note: The warning about insecure Groovy string interpolation for DOCKER_PASSWORD
-                        // is often acceptable here since it's piped to stdin.
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
                         sh "docker push ${IMAGE_NAME}:${env.BUILD_NUMBER}"
                         sh "docker push ${IMAGE_NAME}:latest"
@@ -36,9 +40,14 @@ pipeline {
                     withCredentials([string(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
                         sh """
                             TEMP_KUBECONFIG_FILE=\$(mktemp)
-                            # Use printf %s to write the content exactly as it is, without interpretation
                             printf '%s' "${KUBECONFIG_CONTENT}" > "\$TEMP_KUBECONFIG_FILE"
-                            chmod 600 "\$TEMP_KUBECONFIG_FILE" # Set appropriate permissions
+                            chmod 600 "\$TEMP_KUBECONFIG_FILE"
+
+                            echo "--- DEBUGGING KUBECONFIG CONTENT START ---"
+                            # WARNING: This will print your Kubeconfig to the Jenkins log.
+                            # Remove this 'cat' command after debugging!
+                            cat "\$TEMP_KUBECONFIG_FILE"
+                            echo "--- DEBUGGING KUBECONFIG CONTENT END ---"
 
                             echo "Applying Kubernetes manifests and updating deployment..."
 
@@ -61,7 +70,6 @@ pipeline {
                     withCredentials([string(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG_CONTENT_VERIFY')]) {
                         sh """
                             TEMP_KUBECONFIG_FILE=\$(mktemp)
-                            # Use printf %s here as well
                             printf '%s' "${KUBECONFIG_CONTENT_VERIFY}" > "\$TEMP_KUBECONFIG_FILE"
                             chmod 600 "\$TEMP_KUBECONFIG_FILE"
 
