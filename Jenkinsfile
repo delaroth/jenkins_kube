@@ -9,14 +9,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                // Assuming your Jenkins project is configured to pull from your GitHub repo
-                // This step ensures the latest code is in the workspace
-                git branch: 'main', url: 'https://github.com/your-username/my-kubernetes-app.git' // Replace with your actual GitHub repo URL
-            }
-        }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
