@@ -1,0 +1,22 @@
+# my-kubernetes-app/kubernetes/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-kubernetes-app-deployment
+  labels:
+    app: my-kubernetes-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-kubernetes-app
+  template:
+    metadata:
+      labels:
+        app: my-kubernetes-app
+    spec:
+      containers:
+      - name: my-kubernetes-app
+        image: delaroth/my-kubernetes-app:latest 
+        ports:
+        - containerPort: 80
