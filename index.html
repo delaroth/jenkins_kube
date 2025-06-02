@@ -3,250 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Digital Companion</title>
+    <title>Generative Art Canvas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom CSS for the page's overall appearance and animations */
+        /* Custom CSS for the page's overall appearance and canvas styling */
         body {
             font-family: 'Inter', sans-serif; /* Set font to Inter */
             margin: 0; /* Remove default body margin */
             overflow: hidden; /* Hide scrollbars */
-            background-color: #0c0c1a; /* Very dark blue/purple background */
-            display: flex; /* Use flexbox for centering */
+            background-color: #0a0a1a; /* Very dark background */
+            display: flex; /* Use flexbox for centering content */
+            flex-direction: column; /* Stack elements vertically */
             justify-content: center;
             align-items: center;
             min-height: 100vh; /* Ensure body takes at least full viewport height */
-            cursor: default; /* Default cursor */
-            position: relative; /* Needed for absolute positioning of elements */
+            cursor: crosshair; /* A more artistic cursor */
             user-select: none; /* Prevent text selection */
+            color: #e0e7ff; /* Light text color for instructions */
         }
 
-        /* Styling for the digital pet orb */
-        #petOrb {
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle at 30% 30%, #a78bfa, #6d28d9); /* Purple gradient */
-            border-radius: 50%; /* Perfect circle */
-            position: absolute; /* Allows movement via JS */
-            box-shadow: 0 0 40px rgba(167, 139, 250, 0.8), 0 0 80px rgba(109, 40, 217, 0.5); /* Glowing effect */
-            transition: transform 0.1s ease-out, background 0.3s ease-out, box-shadow 0.3s ease-out; /* Smooth transitions */
-            will-change: transform, background, box-shadow; /* Optimize rendering */
-            z-index: 10; /* Ensure it's above particles */
-            transform: translate(-50%, -50%); /* Center the orb precisely */
+        canvas {
+            background-color: #0a0a1a; /* Match body background for seamless look */
+            display: block; /* Remove extra space below canvas */
+            width: 100%; /* Make canvas fluid width */
+            height: 100%; /* Make canvas fluid height */
+            max-width: 1200px; /* Max width for larger screens */
+            max-height: 800px; /* Max height for larger screens */
+            border-radius: 1.5rem; /* Rounded corners for the canvas */
+            box-shadow: 0 0 50px rgba(100, 50, 200, 0.5), 0 0 100px rgba(50, 20, 100, 0.3); /* Deep, subtle glow */
+            touch-action: none; /* Prevent default touch actions like scrolling/zooming */
         }
 
-        /* Hover effect for the pet orb */
-        #petOrb:hover {
-            transform: translate(-50%, -50%) scale(1.1); /* Slightly grow on hover */
-            box-shadow: 0 0 60px rgba(167, 139, 250, 1), 0 0 100px rgba(109, 40, 217, 0.7); /* Brighter glow */
-        }
-
-        /* Styling for the particles emitted by the pet */
-        .particle {
+        .instructions {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.8); /* White semi-transparent */
-            border-radius: 50%; /* Circular particles */
-            opacity: 0; /* Start invisible */
-            animation: particleFadeOut 1.5s forwards ease-out; /* Particle animation */
-            will-change: transform, opacity; /* Optimize rendering */
-            z-index: 5; /* Below the orb */
-        }
-
-        /* Keyframe animation for particles: fade out and move */
-        @keyframes particleFadeOut {
-            from { opacity: 0.8; transform: scale(1); }
-            to { opacity: 0; transform: scale(0.5); }
-        }
-
-        /* Styling for the hidden message */
-        #hiddenMessage {
-            position: absolute;
-            color: #e0e7ff; /* Light blue text */
-            font-size: 2rem; /* Base font size */
-            font-weight: 600; /* Semi-bold text */
-            opacity: 0; /* Initially invisible */
-            transform: translateY(50px); /* Start below its final position */
-            transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Smooth reveal */
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
-            padding: 20px 30px;
-            background: rgba(20, 20, 40, 0.7); /* Semi-transparent dark background */
-            border-radius: 1rem; /* Rounded corners */
-            box-shadow: 0 0 20px rgba(109, 40, 217, 0.5); /* Subtle purple glow */
-            z-index: 100; /* Ensure it's on top */
-            max-width: 80%; /* Max width for responsiveness */
-            /* Responsive font sizes */
-            @apply text-2xl md:text-3xl lg:text-4xl;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            padding: 0.5rem 1rem;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+            z-index: 100;
+            /* Responsive font size */
+            @apply text-sm md:text-base;
         }
 
-        /* Class to reveal the hidden message */
-        #hiddenMessage.revealed {
+        /* Message box for alerts, replacing alert() */
+        #messageBox {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(30, 30, 50, 0.95);
+            color: #e0e7ff;
+            padding: 20px 30px;
+            border-radius: 1rem;
+            box-shadow: 0 0 25px rgba(100, 50, 200, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        #messageBox.show {
             opacity: 1;
-            transform: translateY(0);
+            visibility: visible;
         }
     </style>
 </head>
 <body>
-    <div id="petOrb" style="left: 50%; top: 50%;"></div>
-
-    <div id="hiddenMessage">
-        You've found a friend in the digital void!
+    <div class="instructions">
+        Move your mouse to create. Click to reset/burst.
     </div>
+    <canvas id="artCanvas"></canvas>
+
+    <div id="messageBox"></div>
 
     <script>
         // Ensure the Inter font is applied to the document's root element
         document.documentElement.style.fontFamily = "'Inter', sans-serif";
 
-        // Get references to DOM elements
-        const body = document.body;
-        const petOrb = document.getElementById('petOrb');
-        const hiddenMessage = document.getElementById('hiddenMessage');
+        const canvas = document.getElementById('artCanvas');
+        const ctx = canvas.getContext('2d');
+        const messageBox = document.getElementById('messageBox');
 
-        // Orb position and velocity
-        let orbX = window.innerWidth / 2;
-        let orbY = window.innerHeight / 2;
-        let orbVX = 0;
-        let orbVY = 0;
-
-        // Mouse position
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-
-        // Interaction state
-        let interactionCount = 0;
-        const revealThreshold = 10; // Number of interactions before message reveals
-        let messageRevealed = false; // Flag to prevent multiple reveals
+        // Art generation parameters
+        let nodes = []; // Array to hold our "art-generating" nodes
+        const maxNodes = 50; // Maximum number of nodes
+        const nodeSize = 2; // Size of each node (for drawing)
+        const trailLength = 100; // How many previous positions to store for trails
+        let mouseX = canvas.width / 2; // Current mouse X position
+        let mouseY = canvas.height / 2; // Current mouse Y position
+        let hue = 0; // Starting hue for color cycling
+        let interactionCounter = 0; // Counter for interactions to trigger events
+        const resetThreshold = 5; // Number of clicks to trigger a full reset/burst
 
         /**
-         * Updates the orb's position and creates particles.
+         * Displays a temporary message to the user.
+         * @param {string} message - The message to display.
+         * @param {number} duration - How long to display the message in milliseconds.
          */
-        function animateOrb() {
-            // Calculate force towards mouse
-            const dx = mouseX - orbX;
-            const dy = mouseY - orbY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            // Apply attraction force
-            const attractionStrength = 0.02; // How strongly the orb follows the mouse
-            orbVX += dx * attractionStrength;
-            orbVY += dy * attractionStrength;
-
-            // Apply damping to prevent infinite acceleration
-            const damping = 0.9;
-            orbVX *= damping;
-            orbVY *= damping;
-
-            // Update orb position
-            orbX += orbVX;
-            orbY += orbVY;
-
-            // Keep orb within bounds (optional, but good for control)
-            const padding = 50; // Keep orb away from edges
-            orbX = Math.max(padding, Math.min(orbX, window.innerWidth - padding));
-            orbY = Math.max(padding, Math.min(orbY, window.innerHeight - padding));
-
-            // Apply new position to the orb using transform for performance
-            petOrb.style.left = `${orbX}px`;
-            petOrb.style.top = `${orbY}px`;
-
-            // Request next animation frame
-            requestAnimationFrame(animateOrb);
+        function showMessageBox(message, duration = 2000) {
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, duration);
         }
 
         /**
-         * Creates a small particle element and animates it.
-         * @param {number} x - X coordinate for the particle.
-         * @param {number} y - Y coordinate for the particle.
+         * Node class for generative art elements.
+         * Each node has a position, velocity, and stores its history for trails.
          */
-        function createParticle(x, y) {
-            const particle = document.createElement('div');
-            const size = Math.random() * 8 + 4; // Random size between 4px and 12px
-            particle.className = 'particle';
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            body.appendChild(particle);
+        class Node {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 5; // Random initial velocity
+                this.vy = (Math.random() - 0.5) * 5;
+                this.history = []; // Stores past positions for drawing trails
+                this.life = 1; // Used for fading in/out or other life cycle effects
+            }
 
-            // Random direction and speed for particle movement
-            const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 30 + 20; // Distance to travel
-            const targetX = x + Math.cos(angle) * speed;
-            const targetY = y + Math.sin(angle) * speed;
+            /**
+             * Updates the node's position and history.
+             * Attracts the node towards the mouse cursor.
+             */
+            update() {
+                // Store current position in history
+                this.history.push({ x: this.x, y: this.y });
+                if (this.history.length > trailLength) {
+                    this.history.shift(); // Remove oldest position if history is too long
+                }
 
-            // Apply animation using CSS transform for smooth movement
-            particle.style.transform = `translate(${targetX - x}px, ${targetY - y}px)`;
+                // Attraction to mouse
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const attractionForce = 0.005; // Strength of attraction
 
-            // Remove particle after its animation
-            particle.addEventListener('animationend', () => {
-                particle.remove();
+                this.vx += dx * attractionForce;
+                this.vy += dy * attractionForce;
+
+                // Apply damping to prevent infinite acceleration
+                this.vx *= 0.97;
+                this.vy *= 0.97;
+
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Boundary collision: Bounce off edges
+                if (this.x < 0 || this.x > canvas.width) {
+                    this.vx *= -1;
+                    this.x = Math.max(0, Math.min(this.x, canvas.width)); // Keep within bounds
+                }
+                if (this.y < 0 || this.y > canvas.height) {
+                    this.vy *= -1;
+                    this.y = Math.max(0, Math.min(this.y, canvas.height)); // Keep within bounds
+                }
+            }
+
+            /**
+             * Draws the node and its trail on the canvas.
+             */
+            draw() {
+                // Draw trail
+                ctx.beginPath();
+                ctx.moveTo(this.history[0].x, this.history[0].y);
+                for (let i = 1; i < this.history.length; i++) {
+                    const point = this.history[i];
+                    // Calculate opacity based on age in trail
+                    const alpha = i / this.history.length * 0.5; // Fades out towards the end of the trail
+                    ctx.lineTo(point.x, point.y);
+                    // Dynamically change color along the trail based on hue cycle
+                    ctx.strokeStyle = `hsla(${hue + i * 0.5}, 100%, 70%, ${alpha})`;
+                    ctx.stroke();
+                }
+                ctx.closePath();
+
+                // Draw current node (optional, can be just trails)
+                ctx.fillStyle = `hsl(${hue}, 100%, 80%)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, nodeSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        /**
+         * Initializes the canvas dimensions and sets up the initial nodes.
+         */
+        function initCanvas() {
+            // Set canvas dimensions to fill the window
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Adjust for max-width/height constraints
+            if (canvas.width > 1200) canvas.width = 1200;
+            if (canvas.height > 800) canvas.height = 800;
+
+            // Clear existing nodes and create new ones for a fresh start
+            nodes = [];
+            for (let i = 0; i < maxNodes; i++) {
+                // Start nodes randomly across the canvas
+                nodes.push(new Node(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height
+                ));
+            }
+            showMessageBox("Art is generating...", 1500);
+        }
+
+        /**
+         * The main animation loop for the generative art.
+         */
+        function animate() {
+            // Gradually clear the canvas with a semi-transparent overlay to create fading trails
+            ctx.fillStyle = 'rgba(10, 10, 26, 0.1)'; // Matches background, but with transparency
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw each node
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
             });
+
+            // Cycle through hue for color animation
+            hue = (hue + 0.5) % 360; // Increment hue slowly
+
+            requestAnimationFrame(animate); // Loop the animation
         }
 
-        /**
-         * Handles mouse movement over the body.
-         * Updates mouseX, mouseY and triggers particle emission if over the orb.
-         * @param {MouseEvent} e - The mouse event object.
-         */
-        body.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+        // --- Event Listeners ---
 
-            // Check if mouse is over the orb to emit particles
-            const orbRect = petOrb.getBoundingClientRect();
-            const orbCenterX = orbRect.left + orbRect.width / 2;
-            const orbCenterY = orbRect.top + orbRect.height / 2;
-            const distanceToOrb = Math.sqrt(
-                Math.pow(e.clientX - orbCenterX, 2) +
-                Math.pow(e.clientY - orbCenterY, 2)
-            );
+        // Update mouse coordinates
+        canvas.addEventListener('mousemove', (e) => {
+            // Get mouse position relative to the canvas
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
 
-            // Emit particles if mouse is close to the orb
-            if (distanceToOrb < orbRect.width / 2 + 20) { // Add a small buffer
-                if (Math.random() < 0.3) { // Emit particles randomly
-                    createParticle(e.clientX, e.clientY);
+        // Handle clicks: trigger a burst/reset
+        canvas.addEventListener('click', () => {
+            interactionCounter++;
+            if (interactionCounter >= resetThreshold) {
+                // Reset nodes to new random positions, creating a "burst" effect
+                nodes.forEach(node => {
+                    node.x = mouseX + (Math.random() - 0.5) * 100; // Scatter around click
+                    node.y = mouseY + (Math.random() - 0.5) * 100;
+                    node.vx = (Math.random() - 0.5) * 20; // Give them a strong push
+                    node.vy = (Math.random() - 0.5) * 20;
+                    node.history = []; // Clear history for new trails
+                });
+                interactionCounter = 0; // Reset counter
+                showMessageBox("New patterns emerge!", 1500);
+            } else {
+                // For non-reset clicks, just add a few new nodes near the click
+                for (let i = 0; i < 5; i++) {
+                    if (nodes.length < maxNodes) {
+                        nodes.push(new Node(mouseX + (Math.random() - 0.5) * 50, mouseY + (Math.random() - 0.5) * 50));
+                    }
                 }
             }
         });
 
-        /**
-         * Handles clicks on the body.
-         * Triggers a 'pet' reaction and reveals message after threshold.
-         */
-        body.addEventListener('click', () => {
-            interactionCount++;
-
-            // Change orb color temporarily on click
-            petOrb.style.background = 'radial-gradient(circle at 30% 30%, #facc15, #eab308)'; // Yellow gradient
-            setTimeout(() => {
-                petOrb.style.background = 'radial-gradient(circle at 30% 30%, #a78bfa, #6d28d9)'; // Back to purple
-            }, 200); // Quick flash
-
-            // Emit a burst of particles on click
-            for (let i = 0; i < 5; i++) {
-                createParticle(orbX + Math.random() * 20 - 10, orbY + Math.random() * 20 - 10);
-            }
-
-            // Reveal message if interaction threshold is met and not already revealed
-            if (interactionCount >= revealThreshold && !messageRevealed) {
-                hiddenMessage.classList.add('revealed');
-                messageRevealed = true;
-            }
-        });
-
-        // Start the orb animation loop when the page loads
-        window.onload = function() {
-            animateOrb();
-        };
-
-        // Handle window resizing: Adjust orb position to stay centered if it was initially centered
+        // Handle window resizing
         window.addEventListener('resize', () => {
-            if (!messageRevealed) { // Only recenter if message hasn't been revealed yet
-                orbX = window.innerWidth / 2;
-                orbY = window.innerHeight / 2;
-                petOrb.style.left = `${orbX}px`;
-                petOrb.style.top = `${orbY}px`;
-            }
+            initCanvas(); // Re-initialize canvas dimensions and nodes on resize
         });
+
+        // Initialize canvas and start animation loop when the window loads
+        window.onload = function() {
+            initCanvas();
+            animate();
+        };
     </script>
 </body>
 </html>
