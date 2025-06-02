@@ -3,284 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generative Art Canvas</title>
+    <title>Anya Sharma - Full Stack Developer Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom CSS for the page's overall appearance and canvas styling */
+        /* Custom CSS for overall styling and scroll behavior */
         body {
             font-family: 'Inter', sans-serif; /* Set font to Inter */
             margin: 0; /* Remove default body margin */
-            overflow: hidden; /* Hide scrollbars */
-            background-color: #0a0a1a; /* Very dark background */
-            display: flex; /* Use flexbox for centering content */
-            flex-direction: column; /* Stack elements vertically */
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh; /* Ensure body takes at least full viewport height */
-            cursor: crosshair; /* A more artistic cursor */
-            user-select: none; /* Prevent text selection */
-            color: #e0e7ff; /* Light text color for instructions */
+            background-color: #0f172a; /* Dark blue-gray background */
+            color: #cbd5e1; /* Light gray text color */
+            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
         }
 
-        canvas {
-            background-color: #0a0a1a; /* Match body background for seamless look */
-            display: block; /* Remove extra space below canvas */
-            width: 100%; /* Make canvas fluid width */
-            height: 100%; /* Make canvas fluid height */
-            max-width: 1200px; /* Max width for larger screens */
-            max-height: 800px; /* Max height for larger screens */
-            border-radius: 1.5rem; /* Rounded corners for the canvas */
-            box-shadow: 0 0 50px rgba(100, 50, 200, 0.5), 0 0 100px rgba(50, 20, 100, 0.3); /* Deep, subtle glow */
-            touch-action: none; /* Prevent default touch actions like scrolling/zooming */
+        /* Styling for sections to add padding and margin */
+        section {
+            padding: 4rem 1rem; /* Vertical padding for sections */
+            margin-bottom: 0.5rem; /* Small margin between sections */
+            /* Responsive padding */
+            @apply md:px-8 lg:px-16;
         }
 
-        .instructions {
-            position: absolute;
-            top: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            padding: 0.5rem 1rem;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 0.5rem;
-            z-index: 100;
-            /* Responsive font size */
-            @apply text-sm md:text-base;
+        /* Styling for the scroll-to-top button */
+        #scrollToTopBtn {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed position on the screen */
+            bottom: 2rem; /* 2rem from the bottom */
+            right: 2rem; /* 2rem from the right */
+            background-color: #6366f1; /* Indigo background */
+            color: white; /* White text */
+            padding: 0.75rem 1rem; /* Padding */
+            border-radius: 9999px; /* Fully rounded (pill shape) */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out; /* Smooth transitions */
+            z-index: 1000; /* Ensure it's on top */
         }
 
-        /* Message box for alerts, replacing alert() */
-        #messageBox {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(30, 30, 50, 0.95);
-            color: #e0e7ff;
-            padding: 20px 30px;
-            border-radius: 1rem;
-            box-shadow: 0 0 25px rgba(100, 50, 200, 0.7);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-            text-align: center;
+        #scrollToTopBtn:hover {
+            background-color: #4f46e5; /* Darker indigo on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
         }
 
-        #messageBox.show {
-            opacity: 1;
-            visibility: visible;
+        /* Subtle reveal animation for sections */
+        .section-reveal {
+            opacity: 0; /* Start invisible */
+            transform: translateY(20px); /* Start slightly below */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Smooth transition */
+        }
+
+        .section-reveal.is-visible {
+            opacity: 1; /* Fully visible */
+            transform: translateY(0); /* Move to original position */
         }
     </style>
 </head>
 <body>
-    <div class="instructions">
-        Move your mouse to create. Click to reset/burst.
-    </div>
-    <canvas id="artCanvas"></canvas>
+    <header class="bg-gray-900 text-white p-4 shadow-lg fixed w-full z-50">
+        <nav class="container mx-auto flex justify-between items-center">
+            <a href="#hero" class="text-2xl font-bold text-indigo-400 rounded-lg p-2 hover:text-indigo-300 transition-colors">Anya Sharma</a>
+            <ul class="flex space-x-6">
+                <li><a href="#about" class="hover:text-indigo-300 transition-colors text-lg">About</a></li>
+                <li><a href="#projects" class="hover:text-indigo-300 transition-colors text-lg">Projects</a></li>
+                <li><a href="#skills" class="hover:text-indigo-300 transition-colors text-lg">Skills</a></li>
+                <li><a href="#contact" class="hover:text-indigo-300 transition-colors text-lg">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div id="messageBox"></div>
+    <main class="pt-16"> <section id="hero" class="bg-gradient-to-br from-gray-800 to-gray-900 text-center py-20 min-h-screen flex flex-col justify-center items-center section-reveal">
+            <div class="max-w-4xl mx-auto">
+                <img src="https://placehold.co/150x150/6366f1/ffffff?text=AS" alt="Anya Sharma Profile" class="rounded-full mx-auto mb-6 border-4 border-indigo-500 shadow-xl">
+                <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+                    Crafting Digital Experiences with <span class="text-indigo-400">Code & Creativity</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                    Full Stack Developer passionate about building innovative and user-centric web applications.
+                </p>
+                <a href="#projects" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-300 transform hover:scale-105">
+                    View My Work
+                </a>
+            </div>
+        </section>
+
+        <section id="about" class="bg-gray-800 py-16 section-reveal">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-4xl font-bold text-indigo-400 mb-8 text-center">About Me</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <p class="text-lg leading-relaxed mb-4">
+                            Hello! I'm Anya Sharma, a dedicated Full Stack Developer with a knack for transforming complex ideas into beautiful and functional web solutions. My journey in development began with a fascination for how technology can solve real-world problems and enhance user experiences.
+                        </p>
+                        <p class="text-lg leading-relaxed">
+                            I thrive in environments where I can continuously learn and apply new technologies. My focus is on writing clean, efficient, and scalable code, whether it's crafting responsive front-end interfaces or designing robust back-end systems. Let's build something amazing together!
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=My+Passion" alt="Developer at work" class="rounded-xl shadow-lg mx-auto">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="bg-gray-900 py-16 section-reveal">
+            <div class="container mx-auto max-w-5xl">
+                <h2 class="text-4xl font-bold text-indigo-400 mb-12 text-center">My Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-103">
+                        <img src="https://placehold.co/400x250/374151/d1d5db?text=Project+1" alt="Project 1 Thumbnail" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-semibold text-white mb-2">E-commerce Platform</h3>
+                            <p class="text-gray-400 text-base mb-4">
+                                A full-featured online store built with React, Node.js, and MongoDB, featuring user authentication, product management, and secure payment integration.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">React</span>
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Node.js</span>
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">MongoDB</span>
+                            </div>
+                            <a href="#" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">View Details &rarr;</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-103">
+                        <img src="https://placehold.co/400x250/374151/d1d5db?text=Project+2" alt="Project 2 Thumbnail" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-semibold text-white mb-2">Task Management App</h3>
+                            <p class="text-gray-400 text-base mb-4">
+                                A collaborative task manager with real-time updates, drag-and-drop interface, and user roles, developed using Vue.js and Firebase.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Vue.js</span>
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Firebase</span>
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Tailwind CSS</span>
+                            </div>
+                            <a href="#" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">View Details &rarr;</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-103">
+                        <img src="https://placehold.co/400x250/374151/d1d5db?text=Project+3" alt="Project 3 Thumbnail" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-semibold text-white mb-2">Blog Content API</h3>
+                            <p class="text-gray-400 text-base mb-4">
+                                A robust RESTful API for managing blog content, built with Python (Flask) and PostgreSQL, including authentication and CRUD operations.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Python</span>
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Flask</span>
+                                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">PostgreSQL</span>
+                            </div>
+                            <a href="#" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">View Details &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="bg-gray-800 py-16 section-reveal">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-4xl font-bold text-indigo-400 mb-12 text-center">My Skills</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 text-center">
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">JavaScript</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">React</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">Node.js</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">Python</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">Tailwind CSS</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">MongoDB</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">SQL (PostgreSQL)</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                        <p class="text-xl font-semibold text-white">Git</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="bg-gray-900 py-16 section-reveal">
+            <div class="container mx-auto max-w-2xl text-center">
+                <h2 class="text-4xl font-bold text-indigo-400 mb-8">Get In Touch</h2>
+                <p class="text-lg leading-relaxed mb-8">
+                    Have a project in mind or just want to chat? Feel free to reach out! I'm always open to new opportunities and collaborations.
+                </p>
+                <form class="space-y-6">
+                    <div>
+                        <input type="text" id="name" name="name" placeholder="Your Name"
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
+                    </div>
+                    <div>
+                        <input type="email" id="email" name="email" placeholder="Your Email"
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
+                    </div>
+                    <div>
+                        <textarea id="message" name="message" rows="5" placeholder="Your Message"
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400"></textarea>
+                    </div>
+                    <button type="submit"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-300 transform hover:scale-105">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 text-center p-6 mt-8">
+        <p>&copy; 2024 Anya Sharma. All rights reserved.</p>
+        <p class="text-sm mt-2">Built with ❤️ and Code.</p>
+    </footer>
+
+    <button id="scrollToTopBtn" title="Go to top">↑</button>
 
     <script>
         // Ensure the Inter font is applied to the document's root element
         document.documentElement.style.fontFamily = "'Inter', sans-serif";
 
-        const canvas = document.getElementById('artCanvas');
-        const ctx = canvas.getContext('2d');
-        const messageBox = document.getElementById('messageBox');
-
-        // Art generation parameters
-        let nodes = []; // Array to hold our "art-generating" nodes
-        const maxNodes = 50; // Maximum number of nodes
-        const nodeSize = 2; // Size of each node (for drawing)
-        const trailLength = 100; // How many previous positions to store for trails
-        let mouseX = canvas.width / 2; // Current mouse X position
-        let mouseY = canvas.height / 2; // Current mouse Y position
-        let hue = 0; // Starting hue for color cycling
-        let interactionCounter = 0; // Counter for interactions to trigger events
-        const resetThreshold = 5; // Number of clicks to trigger a full reset/burst
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        const sections = document.querySelectorAll('.section-reveal'); // Get all sections with reveal class
 
         /**
-         * Displays a temporary message to the user.
-         * @param {string} message - The message to display.
-         * @param {number} duration - How long to display the message in milliseconds.
+         * Smooth scrolls to a target element.
+         * @param {string} targetId - The ID of the element to scroll to.
          */
-        function showMessageBox(message, duration = 2000) {
-            messageBox.textContent = message;
-            messageBox.classList.add('show');
-            setTimeout(() => {
-                messageBox.classList.remove('show');
-            }, duration);
-        }
-
-        /**
-         * Node class for generative art elements.
-         * Each node has a position, velocity, and stores its history for trails.
-         */
-        class Node {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.vx = (Math.random() - 0.5) * 5; // Random initial velocity
-                this.vy = (Math.random() - 0.5) * 5;
-                this.history = []; // Stores past positions for drawing trails
-                this.life = 1; // Used for fading in/out or other life cycle effects
-            }
-
-            /**
-             * Updates the node's position and history.
-             * Attracts the node towards the mouse cursor.
-             */
-            update() {
-                // Store current position in history
-                this.history.push({ x: this.x, y: this.y });
-                if (this.history.length > trailLength) {
-                    this.history.shift(); // Remove oldest position if history is too long
-                }
-
-                // Attraction to mouse
-                const dx = mouseX - this.x;
-                const dy = mouseY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const attractionForce = 0.005; // Strength of attraction
-
-                this.vx += dx * attractionForce;
-                this.vy += dy * attractionForce;
-
-                // Apply damping to prevent infinite acceleration
-                this.vx *= 0.97;
-                this.vy *= 0.97;
-
-                // Update position
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Boundary collision: Bounce off edges
-                if (this.x < 0 || this.x > canvas.width) {
-                    this.vx *= -1;
-                    this.x = Math.max(0, Math.min(this.x, canvas.width)); // Keep within bounds
-                }
-                if (this.y < 0 || this.y > canvas.height) {
-                    this.vy *= -1;
-                    this.y = Math.max(0, Math.min(this.y, canvas.height)); // Keep within bounds
-                }
-            }
-
-            /**
-             * Draws the node and its trail on the canvas.
-             */
-            draw() {
-                // Draw trail
-                ctx.beginPath();
-                ctx.moveTo(this.history[0].x, this.history[0].y);
-                for (let i = 1; i < this.history.length; i++) {
-                    const point = this.history[i];
-                    // Calculate opacity based on age in trail
-                    const alpha = i / this.history.length * 0.5; // Fades out towards the end of the trail
-                    ctx.lineTo(point.x, point.y);
-                    // Dynamically change color along the trail based on hue cycle
-                    ctx.strokeStyle = `hsla(${hue + i * 0.5}, 100%, 70%, ${alpha})`;
-                    ctx.stroke();
-                }
-                ctx.closePath();
-
-                // Draw current node (optional, can be just trails)
-                ctx.fillStyle = `hsl(${hue}, 100%, 80%)`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, nodeSize, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        /**
-         * Initializes the canvas dimensions and sets up the initial nodes.
-         */
-        function initCanvas() {
-            // Set canvas dimensions to fill the window
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            // Adjust for max-width/height constraints
-            if (canvas.width > 1200) canvas.width = 1200;
-            if (canvas.height > 800) canvas.height = 800;
-
-            // Clear existing nodes and create new ones for a fresh start
-            nodes = [];
-            for (let i = 0; i < maxNodes; i++) {
-                // Start nodes randomly across the canvas
-                nodes.push(new Node(
-                    Math.random() * canvas.width,
-                    Math.random() * canvas.height
-                ));
-            }
-            showMessageBox("Art is generating...", 1500);
-        }
-
-        /**
-         * The main animation loop for the generative art.
-         */
-        function animate() {
-            // Gradually clear the canvas with a semi-transparent overlay to create fading trails
-            ctx.fillStyle = 'rgba(10, 10, 26, 0.1)'; // Matches background, but with transparency
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Update and draw each node
-            nodes.forEach(node => {
-                node.update();
-                node.draw();
-            });
-
-            // Cycle through hue for color animation
-            hue = (hue + 0.5) % 360; // Increment hue slowly
-
-            requestAnimationFrame(animate); // Loop the animation
-        }
-
-        // --- Event Listeners ---
-
-        // Update mouse coordinates
-        canvas.addEventListener('mousemove', (e) => {
-            // Get mouse position relative to the canvas
-            const rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left;
-            mouseY = e.clientY - rect.top;
-        });
-
-        // Handle clicks: trigger a burst/reset
-        canvas.addEventListener('click', () => {
-            interactionCounter++;
-            if (interactionCounter >= resetThreshold) {
-                // Reset nodes to new random positions, creating a "burst" effect
-                nodes.forEach(node => {
-                    node.x = mouseX + (Math.random() - 0.5) * 100; // Scatter around click
-                    node.y = mouseY + (Math.random() - 0.5) * 100;
-                    node.vx = (Math.random() - 0.5) * 20; // Give them a strong push
-                    node.vy = (Math.random() - 0.5) * 20;
-                    node.history = []; // Clear history for new trails
+        function smoothScroll(targetId) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 64, // Adjust for fixed header height
+                    behavior: 'smooth'
                 });
-                interactionCounter = 0; // Reset counter
-                showMessageBox("New patterns emerge!", 1500);
+            }
+        }
+
+        // Add smooth scroll to all navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent default anchor jump
+                smoothScroll(this.getAttribute('href').substring(1)); // Get target ID from href
+            });
+        });
+
+        // Show/hide scroll-to-top button based on scroll position
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) { // Show button after scrolling down 300px
+                scrollToTopBtn.style.display = 'block';
             } else {
-                // For non-reset clicks, just add a few new nodes near the click
-                for (let i = 0; i < 5; i++) {
-                    if (nodes.length < maxNodes) {
-                        nodes.push(new Node(mouseX + (Math.random() - 0.5) * 50, mouseY + (Math.random() - 0.5) * 50));
-                    }
+                scrollToTopBtn.style.display = 'none';
+            }
+
+            // Intersection Observer for section reveal animation
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const viewportHeight = window.innerHeight;
+
+                // If section is within viewport (or slightly below)
+                if (sectionTop < viewportHeight - 100) {
+                    section.classList.add('is-visible');
+                } else {
+                    // Optional: remove class if scrolling back up
+                    // section.classList.remove('is-visible');
                 }
+            });
+        });
+
+        // Scroll to top when button is clicked
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initial check for section visibility on page load
+        window.onload = () => {
+            // Trigger scroll event once to check initial section visibility
+            window.dispatchEvent(new Event('scroll'));
+        };
+
+        // Handle form submission (placeholder - no actual submission)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            // In a real application, you would send this data to a server
+            // For this example, we'll just show a message.
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            if (name && email && message) {
+                // Using a simple message box instead of alert()
+                const formMessageBox = document.createElement('div');
+                formMessageBox.style.cssText = `
+                    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background-color: #4CAF50; color: white; padding: 15px 25px;
+                    border-radius: 8px; z-index: 1000; opacity: 0; transition: opacity 0.3s ease-in-out;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                `;
+                formMessageBox.textContent = "Message sent successfully! (This is a demo)";
+                document.body.appendChild(formMessageBox);
+
+                // Fade in
+                setTimeout(() => { formMessageBox.style.opacity = '1'; }, 10);
+                // Fade out and remove
+                setTimeout(() => {
+                    formMessageBox.style.opacity = '0';
+                    formMessageBox.addEventListener('transitionend', () => formMessageBox.remove());
+                }, 3000);
+
+                // Clear form fields
+                this.reset();
+            } else {
+                const formMessageBox = document.createElement('div');
+                formMessageBox.style.cssText = `
+                    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background-color: #f44336; color: white; padding: 15px 25px;
+                    border-radius: 8px; z-index: 1000; opacity: 0; transition: opacity 0.3s ease-in-out;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                `;
+                formMessageBox.textContent = "Please fill in all fields.";
+                document.body.appendChild(formMessageBox);
+
+                // Fade in
+                setTimeout(() => { formMessageBox.style.opacity = '1'; }, 10);
+                // Fade out and remove
+                setTimeout(() => {
+                    formMessageBox.style.opacity = '0';
+                    formMessageBox.addEventListener('transitionend', () => formMessageBox.remove());
+                }, 3000);
             }
         });
-
-        // Handle window resizing
-        window.addEventListener('resize', () => {
-            initCanvas(); // Re-initialize canvas dimensions and nodes on resize
-        });
-
-        // Initialize canvas and start animation loop when the window loads
-        window.onload = function() {
-            initCanvas();
-            animate();
-        };
     </script>
 </body>
 </html>
