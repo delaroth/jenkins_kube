@@ -37,7 +37,6 @@
             border-radius: 1rem; /* Rounded corners for the message box */
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); /* A subtle cyan glow effect */
             z-index: 100; /* Ensure the message is on top of other elements */
-            /* Removed @apply here as it causes SyntaxError in direct browser CSS */
         }
 
         /* Class added by JavaScript to reveal the message */
@@ -215,14 +214,7 @@
                 }
 
                 // Dampen velocity slightly to prevent elements from accelerating infinitely
-                el.style.opacity = item.initialOpacity;
-            });
-
-            // Request the next animation frame for continuous animation
-            requestAnimationFrame(animateUniverse);
-        }
-
-…             item.vx *= 0.99;
+                item.vx *= 0.99;
                 item.vy *= 0.99;
 
                 // Apply the updated position to the element using CSS transform for performance
