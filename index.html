@@ -3,246 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Subtle Revelation</title>
+    <title>Your Digital Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom CSS for the page's overall appearance and animations */
         body {
-            /* Set font to Inter, with sans-serif as a fallback */
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif; /* Set font to Inter */
             margin: 0; /* Remove default body margin */
-            overflow: hidden; /* Hide scrollbars, as elements are positioned absolutely */
-            background-color: #0d1117; /* A dark, almost black background for a cosmic feel */
-            display: flex; /* Use flexbox to center the initial hidden message */
+            overflow: hidden; /* Hide scrollbars */
+            background-color: #0c0c1a; /* Very dark blue/purple background */
+            display: flex; /* Use flexbox for centering */
             justify-content: center;
             align-items: center;
             min-height: 100vh; /* Ensure body takes at least full viewport height */
             cursor: default; /* Default cursor */
-            position: relative; /* Needed for absolute positioning of child elements */
+            position: relative; /* Needed for absolute positioning of elements */
+            user-select: none; /* Prevent text selection */
         }
 
-        /* Styling for the hidden message that appears after transformation */
+        /* Styling for the digital pet orb */
+        #petOrb {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 30% 30%, #a78bfa, #6d28d9); /* Purple gradient */
+            border-radius: 50%; /* Perfect circle */
+            position: absolute; /* Allows movement via JS */
+            box-shadow: 0 0 40px rgba(167, 139, 250, 0.8), 0 0 80px rgba(109, 40, 217, 0.5); /* Glowing effect */
+            transition: transform 0.1s ease-out, background 0.3s ease-out, box-shadow 0.3s ease-out; /* Smooth transitions */
+            will-change: transform, background, box-shadow; /* Optimize rendering */
+            z-index: 10; /* Ensure it's above particles */
+            transform: translate(-50%, -50%); /* Center the orb precisely */
+        }
+
+        /* Hover effect for the pet orb */
+        #petOrb:hover {
+            transform: translate(-50%, -50%) scale(1.1); /* Slightly grow on hover */
+            box-shadow: 0 0 60px rgba(167, 139, 250, 1), 0 0 100px rgba(109, 40, 217, 0.7); /* Brighter glow */
+        }
+
+        /* Styling for the particles emitted by the pet */
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8); /* White semi-transparent */
+            border-radius: 50%; /* Circular particles */
+            opacity: 0; /* Start invisible */
+            animation: particleFadeOut 1.5s forwards ease-out; /* Particle animation */
+            will-change: transform, opacity; /* Optimize rendering */
+            z-index: 5; /* Below the orb */
+        }
+
+        /* Keyframe animation for particles: fade out and move */
+        @keyframes particleFadeOut {
+            from { opacity: 0.8; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Styling for the hidden message */
         #hiddenMessage {
-            position: absolute; /* Position relative to the body */
-            color: #ffffff; /* White text for contrast */
-            font-size: 2.5rem; /* Base font size, responsive classes will override */
-            font-weight: 700; /* Bold text */
+            position: absolute;
+            color: #e0e7ff; /* Light blue text */
+            font-size: 2rem; /* Base font size */
+            font-weight: 600; /* Semi-bold text */
             opacity: 0; /* Initially invisible */
-            transform: translateY(20px); /* Start slightly below its final position */
-            /* Smooth transition for opacity and transform when revealed */
-            transition: opacity 2s ease-in-out, transform 2s ease-in-out;
-            text-align: center; /* Center the text */
-            padding: 20px; /* Padding around the message */
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
-            border-radius: 1rem; /* Rounded corners for the message box */
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); /* A subtle cyan glow effect */
-            z-index: 100; /* Ensure the message is on top of other elements */
+            transform: translateY(50px); /* Start below its final position */
+            transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Smooth reveal */
+            text-align: center;
+            padding: 20px 30px;
+            background: rgba(20, 20, 40, 0.7); /* Semi-transparent dark background */
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(109, 40, 217, 0.5); /* Subtle purple glow */
+            z-index: 100; /* Ensure it's on top */
+            max-width: 80%; /* Max width for responsiveness */
+            /* Responsive font sizes */
+            @apply text-2xl md:text-3xl lg:text-4xl;
         }
 
-        /* Class added by JavaScript to reveal the message */
+        /* Class to reveal the hidden message */
         #hiddenMessage.revealed {
-            opacity: 1; /* Fully visible */
-            transform: translateY(0); /* Move to its final position */
-        }
-
-        /* Base styles for the dynamically created "universe" elements */
-        .universe-element {
-            position: absolute; /* Allows precise positioning */
-            border-radius: 1rem; /* Apply rounded corners to all elements by default */
-            /* Smooth transitions for hover effects (transform and background color) */
-            transition: transform 0.1s ease-out, background-color 0.3s ease-out;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* Subtle white glow */
-            will-change: transform, opacity; /* Optimize browser rendering for these properties */
-        }
-
-        /* Hover effect for the universe elements */
-        .universe-element:hover {
-            transform: scale(1.2) rotate(10deg); /* Grow and slightly rotate on hover */
-            z-index: 99; /* Bring the hovered element to the front */
-        }
-
-        /* Keyframe animation for the initial staggered appearance of elements */
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0); } /* Start invisible and tiny */
-            to { opacity: 1; transform: scale(1); } /* End fully visible and at normal size */
-        }
-
-        /* Class applied to elements for their initial fade-in and scale animation */
-        .fade-in-scale {
-            animation: fadeInScale 1s ease-out forwards; /* Apply the animation */
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <div id="hiddenMessage" class="text-4xl md:text-5xl lg:text-6xl">
-        The universe unfolds for those who observe.
+    <div id="petOrb" style="left: 50%; top: 50%;"></div>
+
+    <div id="hiddenMessage">
+        You've found a friend in the digital void!
     </div>
 
     <script>
         // Ensure the Inter font is applied to the document's root element
         document.documentElement.style.fontFamily = "'Inter', sans-serif";
 
-        // Get references to key DOM elements
+        // Get references to DOM elements
         const body = document.body;
+        const petOrb = document.getElementById('petOrb');
         const hiddenMessage = document.getElementById('hiddenMessage');
 
-        // State variables
-        let isTransformed = false; // Flag to ensure transformation happens only once
-        let elementsArray = []; // Array to store properties of dynamic elements
-        const numElements = 50; // Number of dynamic elements to create
+        // Orb position and velocity
+        let orbX = window.innerWidth / 2;
+        let orbY = window.innerHeight / 2;
+        let orbVX = 0;
+        let orbVY = 0;
 
-        // Predefined color palette for the elements using Tailwind CSS background classes
-        const colors = [
-            'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500',
-            'bg-yellow-500', 'bg-red-500', 'bg-green-500', 'bg-indigo-500'
-        ];
-        // Predefined shapes using Tailwind CSS border-radius classes
-        const shapes = ['rounded-full', 'rounded-lg', '']; // Circle, rounded square, square (no specific rounded class means default square with 1rem border-radius from .universe-element)
-
-        // Mouse coordinates, initialized to the center of the window
+        // Mouse position
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
 
+        // Interaction state
+        let interactionCount = 0;
+        const revealThreshold = 10; // Number of interactions before message reveals
+        let messageRevealed = false; // Flag to prevent multiple reveals
+
         /**
-         * Generates a random integer within a specified range (inclusive).
-         * @param {number} min - The minimum value.
-         * @param {number} max - The maximum value.
-         * @returns {number} A random integer.
+         * Updates the orb's position and creates particles.
          */
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        function animateOrb() {
+            // Calculate force towards mouse
+            const dx = mouseX - orbX;
+            const dy = mouseY - orbY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Apply attraction force
+            const attractionStrength = 0.02; // How strongly the orb follows the mouse
+            orbVX += dx * attractionStrength;
+            orbVY += dy * attractionStrength;
+
+            // Apply damping to prevent infinite acceleration
+            const damping = 0.9;
+            orbVX *= damping;
+            orbVY *= damping;
+
+            // Update orb position
+            orbX += orbVX;
+            orbY += orbVY;
+
+            // Keep orb within bounds (optional, but good for control)
+            const padding = 50; // Keep orb away from edges
+            orbX = Math.max(padding, Math.min(orbX, window.innerWidth - padding));
+            orbY = Math.max(padding, Math.min(orbY, window.innerHeight - padding));
+
+            // Apply new position to the orb using transform for performance
+            petOrb.style.left = `${orbX}px`;
+            petOrb.style.top = `${orbY}px`;
+
+            // Request next animation frame
+            requestAnimationFrame(animateOrb);
         }
 
         /**
-         * Generates a random floating-point number within a specified range.
-         * @param {number} min - The minimum value.
-         * @param {number} max - The maximum value.
-         * @returns {number} A random float.
+         * Creates a small particle element and animates it.
+         * @param {number} x - X coordinate for the particle.
+         * @param {number} y - Y coordinate for the particle.
          */
-        function getRandomFloat(min, max) {
-            return Math.random() * (max - min) + min;
-        }
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            const size = Math.random() * 8 + 4; // Random size between 4px and 12px
+            particle.className = 'particle';
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            body.appendChild(particle);
 
-        /**
-         * Initiates the page transformation, creating and animating the "universe" elements.
-         */
-        function transformPage() {
-            // If already transformed, exit to prevent re-triggering
-            if (isTransformed) return;
-            isTransformed = true; // Set flag to true
+            // Random direction and speed for particle movement
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 30 + 20; // Distance to travel
+            const targetX = x + Math.cos(angle) * speed;
+            const targetY = y + Math.sin(angle) * speed;
 
-            // Remove the initial event listeners from the body
-            body.removeEventListener('mousemove', transformPage);
-            body.removeEventListener('click', transformPage);
+            // Apply animation using CSS transform for smooth movement
+            particle.style.transform = `translate(${targetX - x}px, ${targetY - y}px)`;
 
-            // Loop to create and append dynamic elements to the body
-            for (let i = 0; i < numElements; i++) {
-                const element = document.createElement('div'); // Create a new div element
-                const size = getRandomInt(20, 80); // Random size for the element (20px to 80px)
-                const color = colors[getRandomInt(0, colors.length - 1)]; // Random color from the palette
-                const shape = shapes[getRandomInt(0, shapes.length - 1)]; // Random shape
-
-                // Apply Tailwind classes and custom classes for styling
-                element.className = `universe-element ${color} ${shape} w-[${size}px] h-[${size}px] fade-in-scale`;
-                // Set initial random position within the window bounds
-                element.style.left = `${getRandomInt(0, window.innerWidth - size)}px`;
-                element.style.top = `${getRandomInt(0, window.innerHeight - size)}px`;
-                element.style.opacity = '0'; // Start invisible for the fade-in animation
-                // Stagger the animation start time for a more organic appearance
-                element.style.animationDelay = `${i * 0.05}s`;
-
-                body.appendChild(element); // Add the element to the body
-
-                // Store element properties for use in the animation loop
-                elementsArray.push({
-                    el: element, // Reference to the DOM element
-                    x: parseFloat(element.style.left), // Current X position
-                    y: parseFloat(element.style.top), // Current Y position
-                    vx: getRandomFloat(-0.5, 0.5), // Velocity in X direction
-                    vy: getRandomFloat(-0.5, 0.5), // Velocity in Y direction
-                    size: size, // Size of the element
-                    initialOpacity: getRandomFloat(0.5, 1) // Random initial opacity after fade-in
-                });
-            }
-
-            // Reveal the hidden message after a delay, allowing elements to appear first
-            setTimeout(() => {
-                hiddenMessage.classList.add('revealed'); // Add class to trigger reveal animation
-            }, numElements * 50 + 1000); // Delay based on number of elements + 1 second buffer
-            
-            // Start the main animation loop for the universe elements
-            animateUniverse();
-        }
-
-        /**
-         * The main animation loop for the floating universe elements.
-         * Uses requestAnimationFrame for smooth animations.
-         */
-        function animateUniverse() {
-            elementsArray.forEach(item => {
-                const el = item.el; // Current DOM element
-
-                // Update element's position based on its velocity
-                item.x += item.vx;
-                item.y += item.vy;
-
-                // Boundary collision detection: Bounce elements off the window edges
-                if (item.x + item.size > window.innerWidth || item.x < 0) {
-                    item.vx *= -1; // Reverse X velocity
-                    // Adjust position to prevent sticking to the edge
-                    item.x = Math.max(0, Math.min(item.x, window.innerWidth - item.size));
-                }
-                if (item.y + item.size > window.innerHeight || item.y < 0) {
-                    item.vy *= -1; // Reverse Y velocity
-                    // Adjust position to prevent sticking to the edge
-                    item.y = Math.max(0, Math.min(item.y, window.innerHeight - item.size));
-                }
-
-                // Mouse interaction: Apply a subtle repulsion/attraction force
-                // Calculate distance from element center to mouse cursor
-                const dx = item.x + item.size / 2 - mouseX;
-                const dy = item.y + item.size / 2 - mouseY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const repulsionRadius = 150; // Radius within which mouse interaction occurs
-
-                if (distance < repulsionRadius) {
-                    // Calculate force strength: stronger when closer to the mouse
-                    const force = (repulsionRadius - distance) / repulsionRadius * 0.1;
-                    // Apply force to velocities, pushing elements away from the mouse
-                    item.vx += dx * force * 0.05;
-                    item.vy += dy * force * 0.05;
-                }
-
-                // Dampen velocity slightly to prevent elements from accelerating infinitely
-                item.vx *= 0.99;
-                item.vy *= 0.99;
-
-                // Apply the updated position to the element using CSS transform for performance
-                el.style.transform = `translate(${item.x}px, ${item.y}px)`;
-                // Maintain the initial opacity after the fade-in animation completes
-                el.style.opacity = item.initialOpacity;
+            // Remove particle after its animation
+            particle.addEventListener('animationend', () => {
+                particle.remove();
             });
-
-            // Request the next animation frame for continuous animation
-            requestAnimationFrame(animateUniverse);
         }
 
-        // Initial setup: Listen for the first subtle mouse movement or a click to trigger the transformation.
-        // `once: true` ensures the listener is removed after it fires once.
-        body.addEventListener('mousemove', transformPage, { once: true });
-        body.addEventListener('click', transformPage, { once: true }); // Fallback for touch devices or if mousemove isn't enough
-
-        // Event listener to continuously update mouse coordinates
+        /**
+         * Handles mouse movement over the body.
+         * Updates mouseX, mouseY and triggers particle emission if over the orb.
+         * @param {MouseEvent} e - The mouse event object.
+         */
         body.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+
+            // Check if mouse is over the orb to emit particles
+            const orbRect = petOrb.getBoundingClientRect();
+            const orbCenterX = orbRect.left + orbRect.width / 2;
+            const orbCenterY = orbRect.top + orbRect.height / 2;
+            const distanceToOrb = Math.sqrt(
+                Math.pow(e.clientX - orbCenterX, 2) +
+                Math.pow(e.clientY - orbCenterY, 2)
+            );
+
+            // Emit particles if mouse is close to the orb
+            if (distanceToOrb < orbRect.width / 2 + 20) { // Add a small buffer
+                if (Math.random() < 0.3) { // Emit particles randomly
+                    createParticle(e.clientX, e.clientY);
+                }
+            }
         });
 
-        // Handle window resizing: Elements will naturally bounce off the new boundaries.
-        // For more complex resizing, element positions might need to be re-calculated.
+        /**
+         * Handles clicks on the body.
+         * Triggers a 'pet' reaction and reveals message after threshold.
+         */
+        body.addEventListener('click', () => {
+            interactionCount++;
+
+            // Change orb color temporarily on click
+            petOrb.style.background = 'radial-gradient(circle at 30% 30%, #facc15, #eab308)'; // Yellow gradient
+            setTimeout(() => {
+                petOrb.style.background = 'radial-gradient(circle at 30% 30%, #a78bfa, #6d28d9)'; // Back to purple
+            }, 200); // Quick flash
+
+            // Emit a burst of particles on click
+            for (let i = 0; i < 5; i++) {
+                createParticle(orbX + Math.random() * 20 - 10, orbY + Math.random() * 20 - 10);
+            }
+
+            // Reveal message if interaction threshold is met and not already revealed
+            if (interactionCount >= revealThreshold && !messageRevealed) {
+                hiddenMessage.classList.add('revealed');
+                messageRevealed = true;
+            }
+        });
+
+        // Start the orb animation loop when the page loads
+        window.onload = function() {
+            animateOrb();
+        };
+
+        // Handle window resizing: Adjust orb position to stay centered if it was initially centered
         window.addEventListener('resize', () => {
-            // No explicit action needed here, as the animation loop handles boundary collisions
-            // and elements will adapt to the new window dimensions naturally.
+            if (!messageRevealed) { // Only recenter if message hasn't been revealed yet
+                orbX = window.innerWidth / 2;
+                orbY = window.innerHeight / 2;
+                petOrb.style.left = `${orbX}px`;
+                petOrb.style.top = `${orbY}px`;
+            }
         });
     </script>
 </body>
