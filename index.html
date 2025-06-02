@@ -37,8 +37,7 @@
             border-radius: 1rem; /* Rounded corners for the message box */
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); /* A subtle cyan glow effect */
             z-index: 100; /* Ensure the message is on top of other elements */
-            /* Responsive font sizes using Tailwind utility classes */
-            @apply text-4xl md:text-5xl lg:text-6xl;
+            /* Removed @apply here as it causes SyntaxError in direct browser CSS */
         }
 
         /* Class added by JavaScript to reveal the message */
@@ -76,7 +75,7 @@
     </style>
 </head>
 <body>
-    <div id="hiddenMessage">
+    <div id="hiddenMessage" class="text-4xl md:text-5xl lg:text-6xl">
         The universe unfolds for those who observe.
     </div>
 
@@ -216,7 +215,14 @@
                 }
 
                 // Dampen velocity slightly to prevent elements from accelerating infinitely
-                item.vx *= 0.99;
+                el.style.opacity = item.initialOpacity;
+            });
+
+            // Request the next animation frame for continuous animation
+            requestAnimationFrame(animateUniverse);
+        }
+
+…             item.vx *= 0.99;
                 item.vy *= 0.99;
 
                 // Apply the updated position to the element using CSS transform for performance
@@ -228,4 +234,24 @@
             // Request the next animation frame for continuous animation
             requestAnimationFrame(animateUniverse);
         }
-…</html>
+
+        // Initial setup: Listen for the first subtle mouse movement or a click to trigger the transformation.
+        // `once: true` ensures the listener is removed after it fires once.
+        body.addEventListener('mousemove', transformPage, { once: true });
+        body.addEventListener('click', transformPage, { once: true }); // Fallback for touch devices or if mousemove isn't enough
+
+        // Event listener to continuously update mouse coordinates
+        body.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Handle window resizing: Elements will naturally bounce off the new boundaries.
+        // For more complex resizing, element positions might need to be re-calculated.
+        window.addEventListener('resize', () => {
+            // No explicit action needed here, as the animation loop handles boundary collisions
+            // and elements will adapt to the new window dimensions naturally.
+        });
+    </script>
+</body>
+</html>
