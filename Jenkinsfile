@@ -37,10 +37,6 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // THIS IS THE CRUCIAL CHANGE:
-                    // Use 'file()' binding. Jenkins will take the content of your 'k3s-kubeconfig'
-                    // (even if it's 'Secret text') and write it to a temporary file.
-                    // The path to this temporary file will be available in KUBECFG_FILE_PATH.
                     withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECFG_FILE_PATH')]) {
                         // Set KUBECONFIG environment variable for kubectl to use the temporary file
                         withEnv(["KUBECONFIG=${KUBECFG_FILE_PATH}"]) {
@@ -61,7 +57,6 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    // Apply the same 'file()' binding for the verification stage
                     withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECFG_FILE_PATH')]) {
                         withEnv(["KUBECONFIG=${KUBECFG_FILE_PATH}"]) {
                             echo "Waiting for deployment rollout to complete..."
